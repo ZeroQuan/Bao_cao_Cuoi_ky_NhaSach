@@ -1,0 +1,81 @@
+@model List<NhaSach.Web.Models.Baiviet>
+@{
+    ViewData["Title"] = "Blog";
+    var q = ViewBag.Q as string;
+    int page = ViewBag.Page ?? 1;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int total = ViewBag.Total ?? (Model?.Count ?? 0);
+    int totalPages = (int)Math.Ceiling((double)total / pageSize);
+}
+
+<h2 class="mb-3">Blog</h2>
+
+<form class="row g-2 mb-3" method="get">
+    <div class="col-8 col-md-4">
+        <input class="form-control" name="q" value="@q" placeholder="Từ khoá..." />
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" type="submit">Lọc</button>
+    </div>
+</form>
+
+@if (Model == null || Model.Count == 0)
+{
+    <div class="alert alert-info">Chưa có bài viết.</div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var bv in Model)
+        {
+            <div class="col-md-6">
+                <div class="border rounded p-3 h-100">
+                    <h5 class="mb-1">
+                        <a asp-action="ChiTiet" asp-route-id="@bv.Baiviet_Id">@bv.Tieude_Baiviet</a>
+                    </h5>
+                    <small class="text-muted">@bv.Ngay_Tao.ToLocalTime():dd/MM/yyyy</small>
+
+                    @* Tag nếu có *@
+                    @if (bv.Baiviet_Tags != null && bv.Baiviet_Tags.Any())
+                    {
+                        <div class="mt-2">
+                            @foreach (var t in bv.Baiviet_Tags)
+                            {
+                                <span class="badge bg-secondary me-1">@t.Tag?.Ten_Tag</span>
+                            }
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(bv.Tomtat_Baiviet))
+                    {
+                        <p class="mt-2">@bv.Tomtat_Baiviet</p>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    @* Phan trang don gian *@
+    @if (totalPages > 1)
+    {
+        <nav class="mt-4">
+            <ul class="pagination">
+                <li class="page-item @(page <= 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-q="@q" asp-route-page="@(page - 1)"
+                        asp-route-pageSize="@pageSize">«</a>
+                </li>
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == page ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-q="@q" asp-route-page="@i"
+                            asp-route-pageSize="@pageSize">@i</a>
+                    </li>
+                }
+                <li class="page-item @(page >= totalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-q="@q" asp-route-page="@(page + 1)"
+                        asp-route-pageSize="@pageSize">»</a>
+                </li>
+            </ul>
+        </nav>
+    }
+}

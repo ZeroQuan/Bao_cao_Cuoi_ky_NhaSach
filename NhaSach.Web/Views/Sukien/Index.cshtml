@@ -1,0 +1,58 @@
+@using NhaSach.Web.Helpers
+@model List<NhaSach.Web.Models.Sukien>
+@{
+    ViewData["Title"] = "Sự kiện";
+    int page = ViewBag.Page ?? 1;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int total = ViewBag.Total ?? (Model?.Count ?? 0);
+    int totalPages = (int)Math.Ceiling((double)total / pageSize);
+    bool sapToi = ViewBag.SapToi ?? false;
+}
+@using System.Globalization
+
+<h2 class="mb-3">Sự kiện</h2>
+
+<div class="mb-3">
+  <a class="btn btn-outline-secondary btn-sm" asp-action="Index">Tất cả</a>
+  <a class="btn btn-outline-primary btn-sm" asp-action="Index" asp-route-sapToi="true">Sắp tới</a>
+</div>
+
+@if (Model == null || Model.Count == 0)
+{
+  <div class="alert alert-info">Chưa có sự kiện.</div>
+}
+else
+{
+  <ul class="list-group">
+    @foreach (var sk in Model)
+    {
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <a class="fw-semibold" asp-action="ChiTiet" asp-route-id="@sk.Sukien_Id">@sk.Tieude_Sukien</a>
+          <div class="text-muted small">@sk.Diadiem_Sukien</div>
+        </div>
+        <span class="badge bg-primary rounded-pill">@sk.BatDau_Sukien.ToVNString()</span>
+      </li>
+    }
+  </ul>
+
+  @if (totalPages > 1)
+  {
+    <nav class="mt-4">
+      <ul class="pagination">
+        <li class="page-item @(page <= 1 ? "disabled" : "")">
+          <a class="page-link" asp-action="Index" asp-route-sapToi="@sapToi" asp-route-page="@(page-1)" asp-route-pageSize="@pageSize">«</a>
+        </li>
+        @for (int i = 1; i <= totalPages; i++)
+        {
+          <li class="page-item @(i == page ? "active" : "")">
+            <a class="page-link" asp-action="Index" asp-route-sapToi="@sapToi" asp-route-page="@i" asp-route-pageSize="@pageSize">@i</a>
+          </li>
+        }
+        <li class="page-item @(page >= totalPages ? "disabled" : "")">
+          <a class="page-link" asp-action="Index" asp-route-sapToi="@sapToi" asp-route-page="@(page+1)" asp-route-pageSize="@pageSize">»</a>
+        </li>
+      </ul>
+    </nav>
+  }
+}

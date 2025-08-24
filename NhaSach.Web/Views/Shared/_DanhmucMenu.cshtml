@@ -1,0 +1,11 @@
+@model IEnumerable<NhaSach.Web.Models.Danhmuc>
+<ul class="dropdown-menu">
+    @foreach (var dm in Model)
+    {
+        <li>
+            <a class="dropdown-item" asp-controller="CuaHang" asp-action="Index" asp-route-danhmucId="@dm.Danhmuc_Id">
+                @dm.Ten_Danhmuc
+            </a>
+        </li>
+    }
+</ul>

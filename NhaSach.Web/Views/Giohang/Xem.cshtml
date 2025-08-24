@@ -1,0 +1,45 @@
+@model List<NhaSach.Web.Models.Giohang_Item>
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    var tong = Model.Sum(x => x.DonGia_LucThem * x.SoLuong);
+}
+<h2>Giỏ hàng</h2>
+@if (Model.Count == 0)
+{
+    <div class="alert alert-info">Giỏ hàng trống.</div>
+}
+else
+{
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th class="text-end">Đơn giá</th>
+                <th class="text-center">Số lượng</th>
+                <th class="text-end">Thanh tiền</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var it in Model)
+            {
+                <tr>
+                    <td>@it.Sanpham?.Ten_Sanpham</td>
+                    <td class="text-end">@($"{it.DonGia_LucThem:N0} đ")</td>
+                    <td class="text-center">@it.SoLuong</td>
+                    <td class="text-end">@($"{it.DonGia_LucThem * it.SoLuong:N0} đ")</td>
+                    <td class="text-end">
+                        <form method="post" asp-action="Xoa">
+                            <input type="hidden" name="id" value="@it.Giohang_Item_Id" />
+                            <button class="btn btn-sm btn-outline-danger">Xoá</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-between">
+        <div class="fw-bold">Tổng: @tong.ToString("N0") đ</div>
+        <a class="btn btn-success" asp-controller="Donhang" asp-action="Checkout">Tiến hành đặt hàng</a>
+    </div>
+}

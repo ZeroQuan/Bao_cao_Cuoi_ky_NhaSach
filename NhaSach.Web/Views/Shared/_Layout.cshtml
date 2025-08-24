@@ -1,0 +1,110 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var http = HttpContextAccessor.HttpContext;
+    var returnUrl = (http?.Request.Path.Value ?? "/") + (http?.Request.QueryString.Value ?? "");
+}
+@{
+    var title = ViewData["Title"] as string ?? "Nhà Sách";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@title</title>
+    <!-- Bootstrap 5 (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <!-- Site CSS (nếu có) -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="icon" type="image/x-icon" href="~/Cartethyia.ico" />
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+            <div class="container-fluid page-gutter"> 
+                <!-- Brand -->
+                <a class="navbar-brand d-flex align-items-center" asp-controller="Home" asp-action="Index">
+                    <img src="~/images/Logo.jpg" alt="Cartethyia Logo" style="height:40px;margin-right:8px;" />
+                    Nhà Sách Cartethyia
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                    aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse navbar-collapse">
+                    <!-- Trái: menu -->
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Danh mục</a>
+                            @await Component.InvokeAsync("DanhmucMenuComponent")
+                        </li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="CuaHang" asp-action="Index">Cửa hàng</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Blog" asp-action="Index">Blog</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Sukien" asp-action="Index">Sự kiện</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Giohang" asp-action="Xem">Giỏ hàng</a></li>
+                    </ul>
+
+                    <!-- Phải: search + user -->
+                    <div class="d-flex align-items-center align-items-center" id="mainNav">
+                        <form asp-controller="TimKiem" asp-action="Index" method="get" class="d-none d-lg-flex me-3" style="max-width:360px;">
+                            <div class="input-group w-100">
+                                <input name="q" class="form-control" placeholder="Tìm kiếm sách, tác giả..." aria-label="Tìm kiếm" />
+                                <button class="btn btn-outline-light" type="submit">Tìm kiếm</button>
+                            </div>
+                        </form>
+
+                        <ul class="navbar-nav mb-2 mb-lg-0 d-flex align-items-center">
+                            @if (User.Identity?.IsAuthenticated ?? false)
+                            {
+                                <li class="nav-item d-flex align-items-center me-2">
+                                    <div class="navbar-text d-flex flex-column text-end">
+                                        <span class="navbar-text d-none d-md-inline m-0">
+                                            Xin chào, 
+                                        </span>
+                                        <strong>@User.Identity!.Name</strong>
+                                    </div>
+                                </li>
+                                <li class="nav-item d-flex align-items-center">
+                                    <form class="m-0 d-inline" method="post" asp-controller="Taikhoan" asp-action="DangXuat">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-light btn-sm text-nowrap">Đăng xuất</button>
+                                    </form>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item d-flex align-items-center">
+                                    <a class="btn btn-outline-light btn-sm text-nowrap" asp-controller="Taikhoan" asp-action="Index" asp-route-returnUrl="@returnUrl">
+                                        Đăng nhập/Đăng ký
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="flex-fill">
+        <div class="container-fluid page-gutter py-4">
+            @RenderBody()
+        </div>
+    </main>
+
+    <footer class="border-top footer text-muted mt-auto">
+        <div class="container">
+            &copy; 2025 - Xây dựng website Nhà Sách</a>
+        </div>
+    </footer>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

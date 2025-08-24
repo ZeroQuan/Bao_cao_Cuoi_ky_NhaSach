@@ -1,0 +1,9 @@
+@using NhaSach.Web.Helpers
+@model NhaSach.Web.Models.Sukien
+<li class="list-group-item d-flex justify-content-between align-items-center">
+    <span>
+        <strong>@Model.Tieude_Sukien</strong>
+        <small class="text-muted d-block">@Model.Diadiem_Sukien</small>
+    </span>
+    <span class="badge bg-primary rounded-pill">@Model.BatDau_Sukien.ToVNString()</span>
+</li>

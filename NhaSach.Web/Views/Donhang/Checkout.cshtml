@@ -1,0 +1,69 @@
+@model NhaSach.Web.ViewModels.CheckoutVm
+@{
+    ViewData["Title"] = "Đặt hàng";
+    var tong = Model.Items.Sum(x => x.DonGia_LucThem * x.SoLuong);
+}
+
+<h2>Đặt hàng</h2>
+
+@if (Model.Items.Count == 0)
+{
+    <div class="alert alert-warning">Giỏ hàng trống.</div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-md-7">
+            <form method="post" asp-action="DatHang">
+                @Html.AntiForgeryToken()
+                <div class="mb-3">
+                    <label class="form-label">Họ và tên</label>
+                    <input asp-for="Ho_Ten" class="form-control" />
+                    <span asp-validation-for="Ho_Ten" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Điện thoại</label>
+                    <input asp-for="DienThoai" class="form-control" />
+                    <span asp-validation-for="DienThoai" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Địa chỉ</label>
+                    <textarea asp-for="Dia_Chi" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Dia_Chi" class="text-danger"></span>
+                </div>
+                <button class="btn btn-primary" type="submit">Đặt hàng</button>
+            </form>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header">Tổng kết</div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        @foreach (var it in Model.Items)
+                        {
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>@it.Sanpham?.Ten_Sanpham x @it.SoLuong</span>
+                                <span>@($"{(it.DonGia_LucThem * it.SoLuong):n0} đ")</span>
+                            </li>
+                        }
+                    </ul>
+                    <hr />
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Tổng</span>
+                        <span>@($"{tong:n0} đ")</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

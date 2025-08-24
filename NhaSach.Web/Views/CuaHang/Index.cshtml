@@ -1,0 +1,74 @@
+@model List<NhaSach.Web.Models.Sanpham>
+@{
+    ViewData["Title"] = "Cửa hàng";
+    var q = ViewBag.Q as string;
+    int? cat = ViewBag.Cat as int?;
+    decimal? pmin = ViewBag.Pmin as decimal?;
+    decimal? pmax = ViewBag.Pmax as decimal?;
+    var sort = ViewBag.Sort as string ?? "";
+    var onlyPromo = (bool)(ViewBag.OnlyPromo ?? false);
+}
+<h2 class="mb-3">Cửa hàng</h2>
+
+<form class="row g-2 align-items-end mb-3" method="get">
+    <div class="col-12 col-md-3">
+        <label class="form-label">Từ khoá</label>
+        <input class="form-control" name="q" value="@q" placeholder="Tìm sách..." />
+    </div>
+
+    <div class="col-6 col-md-3">
+        <label class="form-label">Danh mục</label>
+        <select class="form-select" name="cat" asp-items="ViewBag.Danhmucs">
+            <option value="">— Tất cả —</option>
+        </select>
+    </div>
+
+    <div class="col-6 col-md-2">
+        <label class="form-label">Giá từ</label>
+        <input class="form-control" name="pmin" value="@(pmin?.ToString())" inputmode="decimal" />
+    </div>
+    <div class="col-6 col-md-2">
+        <label class="form-label">Giá đến</label>
+        <input class="form-control" name="pmax" value="@(pmax?.ToString())" inputmode="decimal" />
+    </div>
+
+    <div class="col-6 col-md-2">
+        <label class="form-label">Sắp xếp</label>
+        <select class="form-select" name="sort">
+            <option value="" selected="@(string.IsNullOrEmpty(sort) ? "selected" : null)">Mới nhất</option>
+            <option value="price_asc"  selected="@(sort == "price_asc"  ? "selected" : null)">Giá ↑</option>
+            <option value="price_desc" selected="@(sort == "price_desc" ? "selected" : null)">Giá ↓</option>
+            <option value="bestseller" selected="@(sort == "bestseller" ? "selected" : null)">Bán chạy</option>
+        </select>
+    </div>
+
+    <div class="col-6 col-md-2">
+        <div class="form-check mt-4">
+            <input class="form-check-input"
+                type="checkbox"
+                id="onlyPromo"
+                name="onlyPromo"
+                value="true"
+                checked="@(onlyPromo ? "checked" : null)" />
+            <label class="form-check-label" for="onlyPromo">Chỉ khuyến mãi</label>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-2">
+        <button class="btn btn-primary w-100" type="submit">Lọc</button>
+    </div>
+</form>
+
+
+<div class="row g-3">
+    @foreach (var sp in Model)
+    {
+        <div class="col-6 col-md-3">
+            @await Html.PartialAsync("_SanphamCard", sp)
+        </div>
+    }
+    @if (!Model.Any())
+    {
+        <div class="col-12"><div class="alert alert-info">Không có kết quả.</div></div>
+    }
+</div>

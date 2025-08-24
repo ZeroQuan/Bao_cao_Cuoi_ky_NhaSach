@@ -1,0 +1,73 @@
+@using NhaSach.Web.Helpers
+@model NhaSach.Web.Models.Sanpham
+
+@{
+    // Lấy Rank từ ViewData (nếu được truyền khi gọi partial)
+    var rank = 0;
+    if (ViewData["Rank"] != null)
+    {
+        int.TryParse(ViewData["Rank"]?.ToString(), out rank);
+    }
+}
+
+<div class="card h-100">
+  <div class="ratio ratio-3x4 bg-light position-relative">
+    <img src="@Url.ImgSrc(Model.HinhAnh_Chinh)"
+         class="w-100 h-100" style="object-fit:cover"
+         alt="@Model.Ten_Sanpham" loading="lazy"
+         onerror="this.onerror=null;this.src='/images/placeholder.png';" />
+
+    @if (rank >= 1 && rank <= 3)
+    {
+      var color = rank == 1 ? "#f1c40f" : (rank == 2 ? "#bdc3c7" : "#cd7f32");
+      // vàng/bạc/đồng
+      <div class="position-absolute" style="top:0; left:0; width:44px; height:44px; z-index:2;">
+        <!-- Tam giác góc trên-trái -->
+        <div style="
+          position:absolute; inset:0;
+          background:@color;
+          clip-path: polygon(0 0, 100% 0, 0 100%);   /* tạo tam giác */
+          box-shadow: inset 0 0 0 2px rgba(255,255,255,.85);">
+        </div>
+        <!-- Số hạng -->
+        <div style="
+          position:absolute; top:2px; left:6px;
+          font-weight:700; font-size:14px; color:#000;
+          text-shadow: 0 1px 0 rgba(255,255,255,.6);">
+          @rank
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="card-body">
+    <h6 class="card-title text-truncate" title="@Model.Ten_Sanpham">@Model.Ten_Sanpham</h6>
+    <div class="fw-bold">
+      @if (Model.GiaKhuyenMai.HasValue && Model.GiaKhuyenMai.Value < Model.Gia_Ban)
+      {
+          <span class="text-decoration-line-through me-2 text-muted">
+              @Model.Gia_Ban.ToCurrency()
+          </span>
+          <span class="text-danger fw-bold">
+              @Model.GiaKhuyenMai.Value.ToCurrency()
+          </span>
+      }
+      else
+      {
+          <span>@Model.Gia_Ban.ToCurrency()</span>
+      }
+    </div>
+  </div>
+
+  <div class="card-footer bg-white d-flex gap-2">
+    <a class="btn btn-sm btn-primary"
+       asp-controller="Sanpham" asp-action="ChiTiet"
+       asp-route-id="@Model.Sanpham_Id">Xem chi tiết</a>
+
+    <form class="d-inline" method="post" asp-controller="Giohang" asp-action="Them">
+      @Html.AntiForgeryToken()
+      <input type="hidden" name="id" value="@Model.Sanpham_Id" />
+      <button class="btn btn-sm btn-outline-secondary" type="submit">Thêm vào giỏ</button>
+    </form>
+  </div>
+</div>

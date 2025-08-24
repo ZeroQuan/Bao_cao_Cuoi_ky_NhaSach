@@ -1,0 +1,121 @@
+@model NhaSach.Web.Models.TrangNoiDung
+@{
+    ViewData["Title"] = Model.Tieude_Trang;
+
+    // SEO meta description — dùng tên type đầy đủ để tránh trùng tên instance HtmlEncoder
+    if (!string.IsNullOrWhiteSpace(Model.Noidung_Trang))
+    {
+        var stripped = System.Text.RegularExpressions.Regex.Replace(Model.Noidung_Trang, "<.*?>", " ");
+        var plain = System.Text.Encodings.Web.HtmlEncoder.Default.Encode(stripped);
+        ViewData["MetaDescription"] = plain.Length > 160 ? plain.Substring(0,160) + "…" : plain;
+    }
+}
+
+<nav class="mb-3">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Trang" asp-action="Index">Trang</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Tieude_Trang</li>
+    </ol>
+</nav>
+
+<header class="d-flex flex-wrap align-items-center gap-2 mb-2">
+    <h2 class="me-3 m-0">@Model.Tieude_Trang</h2>
+    @if (Model.HienThi_Menu)
+    {
+        <span class="badge text-bg-success">Hiển thị menu</span>
+    }
+    else
+    {
+        <span class="badge text-bg-secondary">Ẩn trên menu</span>
+    }
+</header>
+
+<div class="text-muted small mb-3">
+    <span class="me-3">/@Model.Slug_Trang</span>
+    <span>Cập nhật: @Model.Ngay_Tao.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</span>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <a class="btn btn-sm btn-outline-secondary" asp-action="Index">← Quay lại danh sách</a>
+
+    <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">In</button>
+
+        @if (User?.Identity?.IsAuthenticated ?? false)
+        {
+            <a class="btn btn-sm btn-outline-primary"
+               asp-controller="Trang" asp-action="Sua" asp-route-id="@Model.Trang_Id">Sửa</a>
+
+            <form method="post" asp-controller="Trang" asp-action="ToggleMenu" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Trang_Id" />
+                <button class="btn btn-sm btn-outline-warning" type="submit">
+                    @(Model.HienThi_Menu ? "Ẩn khỏi menu" : "Hiện trên menu")
+                </button>
+            </form>
+
+            <form id="frmDelete" method="post" asp-controller="Trang" asp-action="Xoa" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Trang_Id" />
+                <button class="btn btn-sm btn-outline-danger" type="submit">Xoá</button>
+            </form>
+        }
+    </div>
+</div>
+
+<div class="row g-4">
+    <aside class="col-lg-3 d-none d-lg-block">
+        <div class="card">
+            <div class="card-header">Mục lục</div>
+            <div class="card-body">
+                <nav id="toc" class="small"></nav>
+            </div>
+        </div>
+    </aside>
+
+    <section class="col-lg-9">
+        @if (!string.IsNullOrEmpty(Model.Noidung_Trang))
+        {
+            <article id="page-content">@Html.Raw(Model.Noidung_Trang)</article>
+        }
+        else
+        {
+            <div class="alert alert-info">Chưa có nội dung.</div>
+        }
+    </section>
+</div>
+
+@section Scripts {
+<script>
+// Confirm xoá (đưa ra JS để tránh Razor trong thuộc tính form)
+document.getElementById('frmDelete')?.addEventListener('submit', function(e){
+  if(!confirm('Xoá trang "@Model.Tieude_Trang"?')) e.preventDefault();
+});
+
+// TOC từ h2/h3
+(function(){
+  const root = document.getElementById('page-content');
+  const toc = document.getElementById('toc');
+  if(!root || !toc) return;
+
+  const headings = root.querySelectorAll('h2, h3');
+  if(headings.length === 0){ toc.innerHTML = '<span class="text-muted">Không có mục lục</span>'; return; }
+
+  const ul = document.createElement('ul'); ul.className = 'list-unstyled';
+  headings.forEach(h => {
+    if(!h.id){
+      h.id = h.textContent.toLowerCase().trim()
+        .replace(/\s+/g,'-').replace(/[^\w\-]+/g,'').substring(0,60);
+    }
+    const li = document.createElement('li');
+    li.className = h.tagName === 'H3' ? 'ms-3 my-1' : 'my-1';
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    a.className = 'link-secondary link-underline-opacity-0 link-underline-opacity-50-hover';
+    li.appendChild(a); ul.appendChild(li);
+  });
+  toc.appendChild(ul);
+})();
+</script>
+}

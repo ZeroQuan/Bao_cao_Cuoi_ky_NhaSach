@@ -1,0 +1,47 @@
+# Build
+bin/
+obj/
+**/bin/
+**/obj/
+*.user
+*.suo
+*.cache
+*.log
+
+# VS/VSCode
+.vs/
+.vscode/
+*.csproj.user
+*.rsuser
+
+# ASP.NET Core
+appsettings.*.local.json
+appsettings.Development.local.json
+
+# User Secrets (dotnet user-secrets)
+**/secrets.json
+
+# Artifacts
+*.pdb
+*.mdb
+*.mpack
+*.apk
+*.aab
+
+# NPM/Yarn
+node_modules/
+*.lock
+
+# Publish
+**/wwwroot/dist/
+**/wwwroot/*.map
+
+# Uploads runtime
+**/wwwroot/uploads/
+
+# macOS
+.DS_Store
+
+# JetBrains
+.idea/
+*.iml

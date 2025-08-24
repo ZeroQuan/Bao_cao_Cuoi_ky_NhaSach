@@ -1,0 +1,152 @@
+html {
+  font-size: 12px;
+  position: relative;
+  min-height: 100%;
+}
+
+@media (max-width: 767.98px) {
+  html {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 992px) {
+  :root {
+    --nav-h: 40px;
+  }
+}
+
+:root {
+  --gutter: 1cm;
+}
+
+@media (max-width: 576px) {
+  :root {
+    --gutter: 1rem;
+  }
+}
+.page-gutter {
+  padding-inline: var(--gutter);
+}
+
+@media (max-width: 991.98px) {
+  .navbar .navbar-nav .nav-link {
+    padding-right: .5rem;
+    padding-left: .5rem;
+  }
+}
+
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  margin-bottom: 0;
+  padding-top: var(--nav-h);
+}
+
+main {
+  flex: 1;
+  padding: 1.25rem 0 2rem;
+}
+
+footer.footer {
+  background:#f8f9fa;
+  padding:10px 0;
+  text-align:center;
+  border-top:1px solid #dee2e6;
+  height:60px;
+  line-height:60px; 
+  margin-top:auto; 
+}
+
+.navbar {
+  min-height: var(--nav-h);
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  width: 100%;
+  z-index: 1030;     
+}
+
+.navbar .navbar-text {
+  line-height: 1;
+}
+
+.navbar .input-group>.form-control {
+  border-radius:.8rem 0 0 .8rem;
+}
+
+.navbar .input-group>.btn {
+  border-radius:0 .8rem .8rem 0;
+}
+
+.navbar .form-control:focus {
+  box-shadow: 0 0 0 .10rem rgba(255, 255, 255, .15);
+}
+
+.navbar .nav-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 .1rem #fff, 0 0 0 .25rem #258cfb;
+  border-radius: .25rem;
+}
+
+
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-check-input:focus-visible {
+  box-shadow: 0 0 0 0.1rem #fff, 0 0 0 0.25rem #258cfb;
+  outline: none;
+}
+
+.ratio-3x4 {
+  --bs-aspect-ratio: calc(4 / 3 * 100%);
+}
+
+.ratio-3x4 img {
+  object-fit: cover;
+  display: block;
+}
+
+.product-hero {
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 1/1;
+  border-radius: .5rem;
+  overflow: hidden;
+  background: #f8f9fa;
+}
+
+.product-hero>img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.book-detail img {
+  max-width: 250px;
+  max-height: 350px;
+  object-fit: contain;
+  display: block;
+  margin: auto;
+}
+
+.search-btn {
+  border-radius: 6px;
+  min-height: 44px;
+}
+
+.search-btn:hover,
+.search-btn:focus {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+}
+
+
+

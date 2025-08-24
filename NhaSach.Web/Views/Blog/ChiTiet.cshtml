@@ -1,0 +1,35 @@
+@model NhaSach.Web.Models.Baiviet
+@{
+    ViewData["Title"] = Model.Tieude_Baiviet;
+}
+
+<nav class="mb-3">
+  <a class="btn btn-sm btn-outline-secondary" asp-action="Index">← Quay lại Blog</a>
+</nav>
+
+<h2 class="mb-1">@Model.Tieude_Baiviet</h2>
+<small class="text-muted d-block mb-3">@Model.Ngay_Tao.ToLocalTime():dd/MM/yyyy</small>
+
+@if (Model.Baiviet_Tags != null && Model.Baiviet_Tags.Any())
+{
+  <div class="mb-3">
+    <strong>Tags:</strong>
+    @foreach (var t in Model.Baiviet_Tags)
+    {
+      <span class="badge bg-info text-dark me-1">@t.Tag?.Ten_Tag</span>
+    }
+  </div>
+}
+
+@if (!string.IsNullOrEmpty(Model.Noidung_Baiviet))
+{
+  <div>@Html.Raw(Model.Noidung_Baiviet)</div>
+}
+else if (!string.IsNullOrWhiteSpace(Model.Tomtat_Baiviet))
+{
+  <p class="text-muted">@Model.Tomtat_Baiviet</p>
+}
+else
+{
+  <p class="text-muted">Chưa có nội dung.</p>
+}

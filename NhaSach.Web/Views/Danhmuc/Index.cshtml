@@ -1,0 +1,39 @@
+@model List<NhaSach.Web.Models.Danhmuc>
+@{
+    ViewData["Title"] = "Danh mục";
+}
+<h2 class="mb-3">Danh mục</h2>
+<p>
+    <a class="btn btn-primary" asp-action="Tao">+ Thêm danh mục</a>
+</p>
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên</th>
+            <th>Mô tả</th>    
+            <th>Slug</th>
+            <th class="text-end">...</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var dm in Model)
+        {
+            <tr>
+                <td>@dm.Danhmuc_Id</td>
+                <td>@dm.Ten_Danhmuc</td>
+                <td>@dm.MoTa_Danhmuc</td>
+                <td>@dm.Slug_Danhmuc</td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-outline-secondary" asp-action="Sua" asp-route-id="@dm.Danhmuc_Id">Sửa</a>
+                    <form class="d-inline" method="post" asp-action="Xoa">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@dm.Danhmuc_Id" />
+                        <button class="btn btn-sm btn-outline-danger"
+                            onclick="return confirm('Xoá danh mục này?');">Xoá</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

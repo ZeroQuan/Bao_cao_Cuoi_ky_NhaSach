@@ -1,0 +1,66 @@
+@model NhaSach.Web.Models.Sanpham
+@{
+    ViewData["Title"] = Model.Ten_Sanpham;
+}
+@functions{
+    string ImgSrc(string? p) =>
+        string.IsNullOrWhiteSpace(p)
+        ? Url.Content("~/images/placeholder.png")
+        : (Uri.TryCreate(p, UriKind.Absolute, out _) ? p : Url.Content(p.StartsWith("~/") ? p : "~" + p));
+}
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="product-hero">
+            <img src="@ImgSrc(Model.HinhAnh_Chinh)" alt="@Model.Ten_Sanpham" loading="lazy" decoding="async" />
+        </div>
+    </div>
+    
+    <div class="col-md-7">
+        <h2>@Model.Ten_Sanpham</h2>
+        @{
+            var p = 0;
+            if (Model.Gia_Ban > 0 && Model.GiaKhuyenMai.HasValue && Model.GiaKhuyenMai.Value < Model.Gia_Ban)
+            {
+                p = (int)Math.Round(100m - (Model.GiaKhuyenMai.Value * 100m / Model.Gia_Ban));
+                if (p < 0) p = 0; if (p > 99) p = 99;
+            }
+        }
+        <div class="fs-4 fw-bold mb-3">
+            @if (Model.GiaKhuyenMai.HasValue && Model.GiaKhuyenMai.Value < Model.Gia_Ban)
+            {
+                <span class="text-decoration-line-through me-2 text-muted">
+                    @Model.Gia_Ban.ToString("n0") đ
+                </span>
+                <span class="text-danger fw-bold">
+                    @Model.GiaKhuyenMai.Value.ToString("n0") đ
+                </span>
+                <span class="badge bg-danger ms-2 align-middle">-@p%</span>
+            }
+            else
+            {
+                <span>@Model.Gia_Ban.ToString("n0") đ</span>
+            }
+        </div>
+        <p class="text-muted">@Model.MoTaNgan_Sanpham</p>
+        <dl class="row">
+            <dt class="col-sm-3">Tác giả</dt>
+            <dd class="col-sm-9">@Model.TacGia</dd>
+            <dt class="col-sm-3">Nhà Xuất bản</dt>
+            <dd class="col-sm-9">@Model.NhaXuatBan</dd>
+            <dt class="col-sm-3">Năm Xuất bản</dt>
+            <dd class="col-sm-9">@Model.NamXuatBan</dd>
+            <dt class="col-sm-3">ISBN</dt>
+            <dd class="col-sm-9">@Model.ISBN</dd>
+        </dl>
+        <form method="post" asp-controller="Giohang" asp-action="Them">
+            <input type="hidden" name="id" value="@Model.Sanpham_Id" />
+            <button class="btn btn-primary" type="submit">Thêm vào giỏ</button>
+        </form>
+    </div>
+</div>
+@if (!string.IsNullOrEmpty(Model.MoTa_Sanpham))
+{
+    <hr class="my-4" />
+    <h4>Mô tả chi tiết</h4>
+    <div>@Html.Raw(Model.MoTa_Sanpham)</div>
+}

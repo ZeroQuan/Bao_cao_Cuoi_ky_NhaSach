@@ -1,0 +1,98 @@
+@model List<NhaSach.Web.Models.Sanpham>
+@{
+    ViewData["Title"] = "Sản phẩm";
+}
+@functions{
+    string ImgSrc(string? p)
+    {
+        if (string.IsNullOrWhiteSpace(p)) return Url.Content("~/images/placeholder.png");
+        if (Uri.TryCreate(p, UriKind.Absolute, out _)) return p;           // URL Azure/CDN
+        var path = p.StartsWith("~/") ? p[1..] : p;
+        if (path.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase)) return Url.Content("~" + path);
+        if (path.StartsWith("uploads/", StringComparison.OrdinalIgnoreCase)) return Url.Content("~/" + path);
+        return Url.Content("~/uploads/" + path);                            // chỉ tên file
+    }
+}
+<h2 class="mb-3">Sản phẩm</h2>
+
+<p><a class="btn btn-primary" asp-action="Tao">+ Thêm sản phẩm</a></p>
+
+@if (TempData["Success"] is string ok)
+{
+    <div class="alert alert-success">@ok</div>
+}
+
+@if (Model == null || Model.Count == 0)
+{
+    <div class="alert alert-info">Chưa có sản phẩm.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ảnh</th>
+                    <th>Tên</th>
+                    <th>Danh mục</th>
+                    <th class="text-end">Giá</th>
+                    <th class="text-end">Khuyến mãi</th>
+                    <th class="text-center">Tồn</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var sp in Model)
+            {
+                <tr>
+                    <td>@sp.Sanpham_Id</td>
+                    <td style="width:72px">
+                        <img src="@ImgSrc(sp.HinhAnh_Chinh)"
+                             alt="@sp.Ten_Sanpham"
+                             style="width:56px;height:56px;object-fit:cover;border-radius:.25rem;"
+                             loading="lazy"
+                             onerror="this.onerror=null;this.src='@Url.Content("~/images/placeholder.png")?v=1';" />
+                    </td>
+                    <td class="text-truncate" style="max-width:280px" title="@sp.Ten_Sanpham">@sp.Ten_Sanpham</td>
+                    <td>@(sp.Danhmuc?.Ten_Danhmuc ?? "—")</td>
+                    <td class="text-end">@($"{sp.Gia_Ban:N0} đ")</td>
+                    <td class="text-end">
+                        @{
+                            var hasKm = sp.GiaKhuyenMai.HasValue && sp.GiaKhuyenMai.Value < sp.Gia_Ban;
+                            var p = 0;
+                            if (hasKm && sp.Gia_Ban > 0)
+                            {
+                                p = (int)Math.Round(100m - (sp.GiaKhuyenMai!.Value * 100m / sp.Gia_Ban));
+                                if (p < 0) p = 0; if (p > 99) p = 99;
+                            }
+                        }
+                        @if (hasKm)
+                        {
+                            <span class="text-danger fw-semibold">@($"{sp.GiaKhuyenMai!.Value:N0} đ")</span>
+                            <span class="badge bg-danger ms-1">-@p%</span>
+
+                            <br />
+                            <small class="text-muted text-decoration-line-through">@($"{sp.Gia_Ban:N0} đ")</small>
+                        }
+                        else
+                        {
+                            @($"{sp.Gia_Ban:N0} đ")
+                        }
+                    </td>
+
+                    <td class="text-center">@sp.SoLuong_Ton</td>
+                    <td class="text-end">
+                        <a class="btn btn-sm btn-outline-secondary" asp-action="Sua" asp-route-id="@sp.Sanpham_Id">Sửa</a>
+                        <form method="post" asp-action="Xoa" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@sp.Sanpham_Id" />
+                            <button class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Xoá sản phẩm này?');">Xoá</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}

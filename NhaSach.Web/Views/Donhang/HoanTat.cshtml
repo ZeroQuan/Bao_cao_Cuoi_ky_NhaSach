@@ -1,0 +1,32 @@
+@model NhaSach.Web.Models.Donhang
+@{
+    ViewData["Title"] = "Đặt hàng thành công";
+}
+<div class="text-center">
+    <h2>Cảm ơn bạn!</h2>
+    <p>Đơn hàng <strong>@Model.Ma_Don</strong> đã được tạo thành công.</p>
+</div>
+
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Sản phẩm</th>
+            <th class="text-center">Số lượng</th>
+            <th class="text-end">Đơn giá</th>
+            <th class="text-end">Thành tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ct in Model.Chitiets)
+        {
+            <tr>
+                <td>@ct.Sanpham?.Ten_Sanpham</td>
+                <td class="text-center">@ct.SoLuong</td>
+                <td class="text-end">@ct.DonGia.ToString("N0")</td>
+                <td class="text-end">@((ct.DonGia * ct.SoLuong).ToString("N0"))</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<div class="text-end fw-bold">Tổng: @Model.Tong_Tien.ToString("N0") đ</div>
+<a class="btn btn-primary mt-3" asp-controller="CuaHang" asp-action="Index">Tiếp tục mua sắm</a>

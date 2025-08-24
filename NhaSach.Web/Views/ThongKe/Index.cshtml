@@ -1,0 +1,104 @@
+@{
+    ViewData["Title"] = "Thống kê";
+    int totalProducts = (int)(ViewBag.TotalProducts ?? 0);
+    int totalCategories = (int)(ViewBag.TotalCategories ?? 0);
+    int totalOrders = (int)(ViewBag.TotalOrders ?? 0);
+    decimal revThis = (decimal)(ViewBag.RevenueThisMonth ?? 0m);
+    decimal revPrev = (decimal)(ViewBag.RevenuePrevMonth ?? 0m);
+    DateTime startMonth = (DateTime)(ViewBag.StartMonth ?? DateTime.UtcNow);
+}
+
+<h2 class="mb-3">Thống kê tổng quan</h2>
+<div class="row g-3">
+    <div class="col-6 col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">Sản phẩm</div>
+                <div class="display-6">@totalProducts</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">Danh mục</div>
+                <div class="display-6">@totalCategories</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">Đơn hàng</div>
+                <div class="display-6">@totalOrders</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">Doanh thu @startMonth.ToString("MM/yyyy")</div>
+                <div class="display-6">@revThis.ToString("n0") đ</div>
+                <div class="small text-muted">Tháng trước: @revPrev.ToString("n0") đ</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-4" />
+<h3 class="mb-3">Top 5 sản phẩm bán chạy (tháng hiện tại)</h3>
+<table class="table table-sm align-middle">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Sản phẩm</th>
+            <th class="text-end">Số lượng bán</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            var idx = 1;
+            var top5 = ViewBag.Top5SanPhamThang as IEnumerable<dynamic> ?? new List<dynamic>();
+        }
+        @foreach (var r in top5)
+        {
+            <tr>
+                <td>@idx</td>
+                <td>@r.Ten_Sanpham</td>
+                <td class="text-end">@r.Total</td>
+            </tr>
+            idx++;
+        }
+        @if (!top5.Any())
+        {
+            <tr>
+                <td colspan="3" class="text-muted">Chưa có dữ liệu bán trong tháng.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<hr class="my-4" />
+<h3 class="mb-3">Doanh thu theo ngày</h3>
+<div><canvas id="revChart" height="220"></canvas></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+@{
+    var labelsJson = System.Text.Json.JsonSerializer.Serialize(ViewBag.RevLabels ?? new List<string>());
+    var dataJson = System.Text.Json.JsonSerializer.Serialize(ViewBag.RevData ?? new List<decimal>());
+}
+<script>
+    const labels = @Html.Raw(labelsJson);
+    const data = @Html.Raw(dataJson);
+    const ctx = document.getElementById('revChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets: [{ label: 'Doanh thu', data, tension: 0.3 }] },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString('vi-VN') + ' đ' } }
+            }
+        }
+    });
+</script>

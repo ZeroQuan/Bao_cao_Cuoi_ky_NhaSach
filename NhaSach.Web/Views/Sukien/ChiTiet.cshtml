@@ -1,0 +1,21 @@
+@using NhaSach.Web.Helpers
+@model NhaSach.Web.Models.Sukien
+@{
+    ViewData["Title"] = Model.Tieude_Sukien;
+}
+
+<nav class="mb-3">
+    <a class="btn btn-sm btn-outline-secondary" asp-action="Index">← Quay lại sự kiện</a>
+</nav>
+
+<h2>@Model.Tieude_Sukien</h2>
+<div class="text-muted mb-2">Địa điểm: @Model.Diadiem_Sukien</div>
+<div class="mb-3">
+    <span class="badge bg-secondary">Bắt đầu: @Model.BatDau_Sukien.ToVNString()</span>
+    <span class="badge bg-secondary">Kết thúc: @Model.KetThuc_Sukien.ToVNString()</span>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.Mota_Sukien))
+{
+    <div>@Html.Raw(Model.Mota_Sukien)</div>
+}
